@@ -9,8 +9,13 @@ Interfaz::Interfaz(QWidget *parent)
 
     scene = new QGraphicsScene;
 
-    QPen pen(Qt::darkGray, 3, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
-    QBrush brush(Qt::darkGray,Qt::SolidPattern);
+    QPen pen;
+
+    QImage bloq_esta(PATH_BLOQ);
+    QBrush brush(bloq_esta);
+    QBrush brush2(Qt::darkGreen,Qt::SolidPattern);
+
+    scene->addRect(0,0,2000,650, pen, brush2);
     scene->addRect(0,0,2000,50, pen, brush);
     scene->addRect(0,600,2000,50, pen, brush);
     scene->addRect(0,0,50,600, pen, brush);
@@ -18,6 +23,7 @@ Interfaz::Interfaz(QWidget *parent)
 
 
     ui->graphicsView->setScene(scene);
+    ui->graphicsView->show();
 }
 
 Interfaz::~Interfaz()

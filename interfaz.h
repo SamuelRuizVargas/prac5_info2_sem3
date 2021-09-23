@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 
+#define PATH_BLOQ "../practica5/imagenes/bloque.png"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Interfaz; }
 QT_END_NAMESPACE

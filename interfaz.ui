@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Bomberman</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>imagenes/icono.ico</normaloff>imagenes/icono.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -22,6 +26,15 @@
       </property>
       <property name="verticalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="backgroundBrush">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>170</red>
+         <green>170</green>
+         <blue>170</blue>
+        </color>
+       </brush>
       </property>
      </widget>
     </item>
