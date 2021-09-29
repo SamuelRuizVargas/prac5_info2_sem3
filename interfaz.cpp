@@ -1,7 +1,8 @@
 #include "interfaz.h"
 #include "ui_interfaz.h"
 
-int inicio;
+int inicio=0;
+
 
 Interfaz::Interfaz(QWidget *parent)
     : QMainWindow(parent)
@@ -14,8 +15,7 @@ Interfaz::Interfaz(QWidget *parent)
     QPen pen;
     QBrush brush2(Qt::darkGreen,Qt::SolidPattern);
     scene->addRect(0,0,1550,650, pen, brush2);
-    inicio=700;
-    scene->setSceneRect(0,-15,inicio,671);
+    scene->setSceneRect(inicio,-15,700,671);
     //personaje
     bombardero =new bomber();
     scene->addItem(bombardero);
@@ -46,13 +46,11 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
     {
         bombardero->moveRight();
         if(EvaluarColision())
-        {
             bombardero->moveLeft();
-        }
         else if(sobrepasa())
         {
-            scene->setSceneRect(0,-15,(inicio)+50,671);//ARREGLAR
             inicio+=50;
+            scene->setSceneRect(inicio,-15,700,671);//ARREGLAR
         }
     }
     else if(evento->key()==Qt::Key_W)
@@ -68,8 +66,8 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
             bombardero->moveRight();
         else if(sobrepasa())
         {
-            scene->setSceneRect(0,-15,inicio-50,671);//ARREGLAR
             inicio-=50;
+            scene->setSceneRect(inicio,-15,700,671);//ARREGLAR
         }
     }
 }
@@ -92,7 +90,7 @@ bool Interfaz::sobrepasa()//Dice si el personaje ya paso alguno de los puntos li
 {
     bool sobrepasa=false;
     int x=bombardero->getPOSX();
-    int limit_izq=350,limit_dere=1200;
+    int limit_izq=300,limit_dere=1250;
     if(x>limit_izq and x<limit_dere)
     {
         sobrepasa=true;
