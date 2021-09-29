@@ -4,6 +4,8 @@
 #include <QGraphicsItem>
 #include <QPainter>
 
+#define PATH_BOMB "../practica5/imagenes/bomberman.png"
+
 class bomber : public QGraphicsItem
 {
     int h=50;
