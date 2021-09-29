@@ -18,6 +18,7 @@ public:
     solidos(int,int,int,int);
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
+    ~solidos();
 };
 
 #endif // SOLIDOS_H

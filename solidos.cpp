@@ -27,6 +27,12 @@ void solidos::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 {
     QImage bloq_esta(PATH_BLOQ);
     QBrush brush_im(bloq_esta);
+    painter->setPen(Qt::NoPen);
     painter->setBrush(brush_im);
     painter->drawRect(boundingRect());
+}
+
+solidos::~solidos()
+{
+
 }
