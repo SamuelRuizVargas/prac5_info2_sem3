@@ -20,6 +20,7 @@ Interfaz::Interfaz(QWidget *parent)
     bombardero =new bomber();
     scene->addItem(bombardero);
     //Se grafica el mapa estatico
+    dibujarLadrillos();
     dibujarBordes();
     dibujarIntermedios();
     //referencia 0,0
@@ -50,7 +51,7 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
         else if(sobrepasa())
         {
             inicio+=50;
-            scene->setSceneRect(inicio,-15,700,671);//ARREGLAR
+            scene->setSceneRect(inicio,-15,700,671);
         }
     }
     else if(evento->key()==Qt::Key_W)
@@ -67,7 +68,7 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
         else if(sobrepasa())
         {
             inicio-=50;
-            scene->setSceneRect(inicio,-15,700,671);//ARREGLAR
+            scene->setSceneRect(inicio,-15,700,671);
         }
     }
 }
@@ -75,10 +76,18 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
 bool Interfaz::EvaluarColision()//se evalua si el objeto colisiona con otro(s)
 {
     QList<solidos*>::iterator it;
+    QList<destructibles*>::iterator ite;
 
     for(it=bloq_solidos.begin(); it!=bloq_solidos.end(); it++)
     {
         if(bombardero->collidesWithItem(*it))
+        {
+            return true;
+        }
+    }
+    for(ite=bloq_destru.begin(); ite!=bloq_destru.end(); ite++)
+    {
+        if(bombardero->collidesWithItem(*ite))
         {
             return true;
         }
@@ -90,7 +99,7 @@ bool Interfaz::sobrepasa()//Dice si el personaje ya paso alguno de los puntos li
 {
     bool sobrepasa=false;
     int x=bombardero->getPOSX();
-    int limit_izq=300,limit_dere=1250;
+    int limit_izq=300,limit_dere=1200;
     if(x>limit_izq and x<limit_dere)
     {
         sobrepasa=true;
@@ -160,6 +169,46 @@ void Interfaz::dibujarIntermedios()//dibuja los solidos interiores del mapa
         x_ini=100;
         y_ini+=100;
     }
+}
+
+void Interfaz::dibujarLadrillos(std::string ruta)
+{
+    ifstream archivo;
+    string coorde,numero,int1,int2,digi;
+    int ente1,ente2,len,conta;
+    archivo.open(ruta, ios::in);
+    while(!archivo.eof())
+    {
+        if (archivo.eof())
+            break;
+        getline(archivo,coorde);
+        len=coorde.length();
+        conta=0;
+        for (int i=0; i<=len;i++)
+        {
+            digi=coorde[i];
+            if (digi!="," and digi[0]!='\000' )
+            {
+                numero+=digi;
+            }
+            else
+            {
+                conta+=1;
+                if(conta==1)
+                    int1+=numero;
+                else if(conta==2)
+                    int2+=numero;
+                numero.erase();
+            }
+        }
+        ente1=atoi(int1.c_str());
+        ente2=atoi(int2.c_str());
+        int1.erase();
+        int2.erase();
+        bloq_destru.append(new destructibles(ente1,ente2));
+        scene->addItem(bloq_destru.back());
+    }
+    archivo.close();
 }
 
 

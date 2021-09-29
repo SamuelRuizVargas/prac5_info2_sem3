@@ -7,11 +7,13 @@
 #include <vector>
 
 #include "solidos.h"
+#include "destructibles.h"
 #include "bomber.h"
 
 using namespace std;
 
-#define PATH_SOLID "../practica5/posiciones/posxposy.txt"
+#define PATH_SOLID "../practica5/posiciones/posxposy_soli.txt"
+#define PATH_LADRI "../practica5/posiciones/posxposy_destru.txt"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Interfaz; }
@@ -34,6 +36,8 @@ private:
     bool sobrepasa();
     void dibujarBordes(std::string=PATH_SOLID);
     void dibujarIntermedios();
+    void dibujarLadrillos(std::string=PATH_LADRI);
     QList<solidos*> bloq_solidos;
+    QList<destructibles*> bloq_destru;
 };
 #endif // INTERFAZ_H
