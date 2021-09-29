@@ -6,12 +6,27 @@ solidos::solidos()
     an=0;
     posx=0;
     posy=0;
+    setPos(posx,posy);
 }
 
-solidos::solidos(int h_, int an_, int x, int y)
+solidos::solidos(int x, int y, int _an, int _h)
 {
-    h=h_;
-    an=an_;
+    h=_h;
+    an=_an;
     posx=x;
     posy=y;
+    setPos(posx,posy);
+}
+
+QRectF solidos::boundingRect() const
+{
+    return QRectF(0, 0, an, h);
+}
+
+void solidos::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QImage bloq_esta(PATH_BLOQ);
+    QBrush brush_im(bloq_esta);
+    painter->setBrush(brush_im);
+    painter->drawRect(boundingRect());
 }
