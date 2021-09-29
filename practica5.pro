@@ -10,12 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     bomber.cpp \
+    destructibles.cpp \
     main.cpp \
     interfaz.cpp \
     solidos.cpp
 
 HEADERS += \
     bomber.h \
+    destructibles.h \
     interfaz.h \
     solidos.h
 
