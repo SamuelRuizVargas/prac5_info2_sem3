@@ -22,7 +22,7 @@ QRectF bomber::boundingRect() const //valores del rectangulo de interaccion
 void bomber::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)//pintado del objeto
 {
     QPixmap pixmap;
-    pixmap.load(PATH_BOMB);
+    pixmap.load(PATH_BOMBER);
     painter->drawPixmap(boundingRect(),pixmap,pixmap.rect());
 }
 
