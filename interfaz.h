@@ -5,10 +5,12 @@
 #include <QKeyEvent>
 #include <fstream>
 #include <vector>
+#include <QTimer>
 
 #include "solidos.h"
 #include "destructibles.h"
 #include "bomber.h"
+#include "bomba.h"
 
 using namespace std;
 
@@ -27,17 +29,24 @@ public:
     Interfaz(QWidget *parent = nullptr);
     ~Interfaz();
 
+public slots:
+    void eliminarBomba();
+
 private:
     Ui::Interfaz *ui;
     bomber *bombardero;
+    bomba *bomb;
     QGraphicsScene *scene;
+    QList<solidos*> bloq_solidos;
+    QList<bomba*> bombs;
+    QList<destructibles*> bloq_destru;
+    QTimer *timer;
+
     void keyPressEvent(QKeyEvent *evento);
     bool EvaluarColision();
-    bool sobrepasa();
+    bool sobrepasa(int);
     void dibujarBordes(std::string=PATH_SOLID);
     void dibujarIntermedios();
     void dibujarLadrillos(std::string=PATH_LADRI);
-    QList<solidos*> bloq_solidos;
-    QList<destructibles*> bloq_destru;
 };
 #endif // INTERFAZ_H

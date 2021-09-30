@@ -3,7 +3,6 @@
 
 int inicio=0;
 
-
 Interfaz::Interfaz(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Interfaz)
@@ -25,6 +24,9 @@ Interfaz::Interfaz(QWidget *parent)
     dibujarIntermedios();
     //referencia 0,0
     scene->addRect(0,0,1,1, QPen(Qt::blue, 3, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin), QBrush(Qt::blue,Qt::SolidPattern));
+    //timer de las bombas
+    timer=new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(eliminarBomba()));
     //mostrar escena
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
@@ -45,10 +47,11 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
     }
     else if (evento->key()==Qt::Key_D)
     {
+        int xd=bombardero->getPOSX();//valor en x antes de moverse
         bombardero->moveRight();
         if(EvaluarColision())
             bombardero->moveLeft();
-        else if(sobrepasa())
+        else if(sobrepasa(xd))
         {
             inicio+=50;
             scene->setSceneRect(inicio,-15,700,671);
@@ -62,13 +65,25 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
     }
     else if(evento->key()==Qt::Key_A)
     {
+        int xd=bombardero->getPOSX();//valor en x antes de moverse
         bombardero->moveLeft();
         if(EvaluarColision())
             bombardero->moveRight();
-        else if(sobrepasa())
+        else if(sobrepasa(xd))
         {
             inicio-=50;
             scene->setSceneRect(inicio,-15,700,671);
+        }
+    }
+    else if(evento->key()==Qt::Key_E)
+    {
+        if(bombs.count()==0)
+        {
+            int x=bombardero->getPOSX(),y=bombardero->getPOSY();
+            bomb=new bomba(x,y);
+            bombs.append(new bomba(x,y));
+            scene->addItem(bomb);
+            timer->start(3000);
         }
     }
 }
@@ -95,16 +110,27 @@ bool Interfaz::EvaluarColision()//se evalua si el objeto colisiona con otro(s)
     return false;
 }
 
-bool Interfaz::sobrepasa()//Dice si el personaje ya paso alguno de los puntos limite
+bool Interfaz::sobrepasa(int xd)//Dice si el personaje ya paso alguno de los puntos limite
 {
     bool sobrepasa=false;
     int x=bombardero->getPOSX();
-    int limit_izq=300,limit_dere=1200;
-    if(x>limit_izq and x<limit_dere)
+    int limit_izq=300,limit_dere=1050;
+    if(x>=limit_izq and x<=limit_dere)
+    {
+        sobrepasa=true;
+    }
+    if(xd==300 or xd==1050)
     {
         sobrepasa=true;
     }
     return sobrepasa;
+}
+
+void Interfaz::eliminarBomba()
+{
+    scene->removeItem(bomb);
+    timer->stop();
+    bombs.clear();
 }
 
 void Interfaz::dibujarBordes(std::string ruta)//dibuja los bordes del mapa
