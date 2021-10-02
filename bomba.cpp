@@ -14,6 +14,16 @@ bomba::bomba(int x, int y)
     setPos(posx,posy);
 }
 
+int bomba::getPOSX()
+{
+    return posx;
+}
+
+int bomba::getPOSY()
+{
+    return posy;
+}
+
 QRectF bomba::boundingRect() const
 {
     return QRectF(0,0,50,50);
@@ -24,11 +34,6 @@ void bomba::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     QPixmap pixmap;
     pixmap.load(PATH_BOMB);
     painter->drawPixmap(boundingRect(),pixmap,pixmap.rect());
-}
-
-bool bomba::destruir()
-{
-    return true;
 }
 
 bomba::~bomba()

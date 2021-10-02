@@ -16,9 +16,10 @@ class bomba : public QGraphicsItem
 public:
     bomba();
     bomba(int,int);
+    int getPOSX();
+    int getPOSY();
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
-    bool destruir();
     ~bomba();
 };
 
