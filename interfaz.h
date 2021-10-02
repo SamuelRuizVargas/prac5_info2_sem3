@@ -11,6 +11,7 @@
 #include "destructibles.h"
 #include "bomber.h"
 #include "bomba.h"
+#include "explosion.h"
 
 using namespace std;
 
@@ -31,19 +32,24 @@ public:
 
 public slots:
     void eliminarBomba();
+    void eliminarExplo();
 
 private:
     Ui::Interfaz *ui;
     bomber *bombardero;
     bomba *bomb;
+    explosion *exp_actu;
     QGraphicsScene *scene;
     QList<solidos*> bloq_solidos;
     QList<bomba*> bombs;
     QList<destructibles*> bloq_destru;
+    QList<explosion*> rango_explo;
     QTimer *timer;
+    QTimer *timer_2;
 
     void keyPressEvent(QKeyEvent *evento);
     bool EvaluarColision();
+    bool EvaluarColisionExp();
     bool sobrepasa(int);
     void dibujarBordes(std::string=PATH_SOLID);
     void dibujarIntermedios();

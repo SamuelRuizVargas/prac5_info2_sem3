@@ -27,6 +27,9 @@ Interfaz::Interfaz(QWidget *parent)
     //timer de las bombas
     timer=new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(eliminarBomba()));
+    //timer de las bombas
+    timer_2=new QTimer(this);
+    connect(timer_2,SIGNAL(timeout()),this,SLOT(eliminarExplo()));
     //mostrar escena
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
@@ -80,15 +83,14 @@ void Interfaz::keyPressEvent(QKeyEvent *evento)//evento de presionar tecla
         if(bombs.count()==0)
         {
             int x=bombardero->getPOSX(),y=bombardero->getPOSY();
-            bomb=new bomba(x,y);
             bombs.append(new bomba(x,y));
-            scene->addItem(bomb);
+            scene->addItem(bombs.back());
             timer->start(3000);
         }
     }
 }
 
-bool Interfaz::EvaluarColision()//se evalua si el objeto colisiona con otro(s)
+bool Interfaz::EvaluarColision()//se evalua si el personaje colisiona con otro(s) objeto(s)
 {
     QList<solidos*>::iterator it;
     QList<destructibles*>::iterator ite;
@@ -118,6 +120,36 @@ bool Interfaz::EvaluarColision()//se evalua si el objeto colisiona con otro(s)
     return false;
 }
 
+bool Interfaz::EvaluarColisionExp()//se evalua si la explosion colisiona con algun objeto y que accion tomar al respecto
+{
+    QList<solidos*>::iterator it;
+    QList<destructibles*>::iterator ite;
+
+    for(it=bloq_solidos.begin(); it!=bloq_solidos.end(); it++)
+    {
+        if(exp_actu->collidesWithItem(*it))
+        {
+            return false;
+        }
+    }
+    int contador=0;
+    for(ite=bloq_destru.begin(); ite!=bloq_destru.end(); ite++)
+    {
+        if(exp_actu->collidesWithItem(*ite))
+        {
+            scene->removeItem(*ite);
+            bloq_destru.removeAt(contador);
+            return true;
+        }
+        contador++;
+    }
+    if(exp_actu->collidesWithItem(bombardero))
+    {
+        //Quitar una vida
+    }
+    return true;
+}
+
 bool Interfaz::sobrepasa(int xd)//Dice si el personaje ya paso alguno de los puntos limite
 {
     bool sobrepasa=false;
@@ -136,9 +168,56 @@ bool Interfaz::sobrepasa(int xd)//Dice si el personaje ya paso alguno de los pun
 
 void Interfaz::eliminarBomba()//Se encarga de eliminar la bomba de la escena
 {
-    scene->removeItem(bomb);
+    int x=bombs.back()->getPOSX(), y=bombs.back()->getPOSY(), copy_x, copy_y;
+    scene->removeItem(bombs.back());
     timer->stop();
     bombs.clear();
+    //se grafica el centro de la explosion
+    rango_explo.append(new explosion("centro",x,y));
+    scene->addItem(rango_explo.back());
+    //lado derecho graficable?
+    copy_x=x+50;
+    exp_actu=new explosion("derecha",copy_x,y);
+    if(EvaluarColisionExp())
+    {
+        rango_explo.append(exp_actu);
+        scene->addItem(rango_explo.back());
+    }
+    //lado izquierdo graficable?
+    copy_x=x-50;
+    exp_actu=new explosion("izquierda",copy_x,y);
+    if(EvaluarColisionExp())
+    {
+        rango_explo.append(exp_actu);
+        scene->addItem(rango_explo.back());
+    }
+    //lado de arriba graficable?
+    copy_y=y-50;
+    exp_actu=new explosion("arriba",x,copy_y);
+    if(EvaluarColisionExp())
+    {
+        rango_explo.append(exp_actu);
+        scene->addItem(rango_explo.back());
+    }
+    //lado de abajo graficable?
+    copy_y=y+50;
+    exp_actu=new explosion("abajo",x,copy_y);
+    if(EvaluarColisionExp())
+    {
+        rango_explo.append(exp_actu);
+        scene->addItem(rango_explo.back());
+    }
+    timer_2->start(1000);
+}
+
+void Interfaz::eliminarExplo()//elimina la explosion de la escena
+{
+    for(int i=0;i<rango_explo.count();i++)
+    {
+        scene->removeItem(rango_explo[i]);
+    }
+    timer_2->stop();
+    rango_explo.clear();
 }
 
 void Interfaz::dibujarBordes(std::string ruta)//dibuja los bordes del mapa
