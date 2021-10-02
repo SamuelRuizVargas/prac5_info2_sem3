@@ -24,6 +24,11 @@ destructibles::destructibles(int x, int y, bool puerta)
     setPos(posx,posy);
 }
 
+bool destructibles::getDoor()
+{
+    return door;
+}
+
 QRectF destructibles::boundingRect() const
 {
     return QRectF(0, 0, an, h);

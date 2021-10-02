@@ -18,6 +18,7 @@ public:
     destructibles();
     destructibles(int,int);
     destructibles(int,int,bool);
+    bool getDoor();
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
     ~destructibles();
