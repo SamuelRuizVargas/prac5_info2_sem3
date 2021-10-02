@@ -3,15 +3,18 @@
 #include <QGraphicsScene>
 #include <QMainWindow>
 #include <QKeyEvent>
+#include <stdlib.h>
 #include <fstream>
 #include <vector>
 #include <QTimer>
+#include <time.h>
 
 #include "solidos.h"
 #include "destructibles.h"
 #include "bomber.h"
 #include "bomba.h"
 #include "explosion.h"
+#include "puerta.h"
 
 using namespace std;
 

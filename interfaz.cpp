@@ -290,6 +290,10 @@ void Interfaz::dibujarLadrillos(std::string ruta)
     string coorde,numero,int1,int2,digi;
     int ente1,ente2,len,conta;
     archivo.open(ruta, ios::in);
+    srand(time(NULL));
+    int num=rand()%55;
+    int contador=1;
+    bool aqui=true;
     while(!archivo.eof())
     {
         if (archivo.eof())
@@ -318,8 +322,18 @@ void Interfaz::dibujarLadrillos(std::string ruta)
         ente2=atoi(int2.c_str());
         int1.erase();
         int2.erase();
-        bloq_destru.append(new destructibles(ente1,ente2));
-        scene->addItem(bloq_destru.back());
+        if(contador==num)
+        {
+            bloq_destru.append(new destructibles(ente1,ente2,aqui));
+            scene->addItem(new puerta(ente1,ente2));
+            scene->addItem(bloq_destru.back());
+        }
+        else
+        {
+            bloq_destru.append(new destructibles(ente1,ente2));
+            scene->addItem(bloq_destru.back());
+        }
+        contador++;
     }
     archivo.close();
 }
