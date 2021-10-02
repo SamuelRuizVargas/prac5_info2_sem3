@@ -15,6 +15,7 @@ SOURCES += \
     explosion.cpp \
     main.cpp \
     interfaz.cpp \
+    puerta.cpp \
     solidos.cpp
 
 HEADERS += \
@@ -23,6 +24,7 @@ HEADERS += \
     destructibles.h \
     explosion.h \
     interfaz.h \
+    puerta.h \
     solidos.h
 
 FORMS += \
