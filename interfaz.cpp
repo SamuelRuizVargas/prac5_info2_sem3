@@ -92,6 +92,7 @@ bool Interfaz::EvaluarColision()//se evalua si el objeto colisiona con otro(s)
 {
     QList<solidos*>::iterator it;
     QList<destructibles*>::iterator ite;
+    QList<bomba*> ::iterator iter;
 
     for(it=bloq_solidos.begin(); it!=bloq_solidos.end(); it++)
     {
@@ -103,6 +104,13 @@ bool Interfaz::EvaluarColision()//se evalua si el objeto colisiona con otro(s)
     for(ite=bloq_destru.begin(); ite!=bloq_destru.end(); ite++)
     {
         if(bombardero->collidesWithItem(*ite))
+        {
+            return true;
+        }
+    }
+    for(iter=bombs.begin(); iter!=bombs.end(); iter++)
+    {
+        if(bombardero->collidesWithItem(*iter))
         {
             return true;
         }
@@ -126,7 +134,7 @@ bool Interfaz::sobrepasa(int xd)//Dice si el personaje ya paso alguno de los pun
     return sobrepasa;
 }
 
-void Interfaz::eliminarBomba()
+void Interfaz::eliminarBomba()//Se encarga de eliminar la bomba de la escena
 {
     scene->removeItem(bomb);
     timer->stop();
