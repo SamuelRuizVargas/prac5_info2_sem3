@@ -12,6 +12,7 @@ SOURCES += \
     bomba.cpp \
     bomber.cpp \
     destructibles.cpp \
+    explosion.cpp \
     main.cpp \
     interfaz.cpp \
     solidos.cpp
@@ -20,6 +21,7 @@ HEADERS += \
     bomba.h \
     bomber.h \
     destructibles.h \
+    explosion.h \
     interfaz.h \
     solidos.h
 
