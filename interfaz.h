@@ -1,6 +1,7 @@
 #ifndef INTERFAZ_H
 #define INTERFAZ_H
 #include <QGraphicsScene>
+#include <QMessageBox>
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <stdlib.h>
@@ -8,6 +9,7 @@
 #include <vector>
 #include <QTimer>
 #include <time.h>
+
 
 #include "solidos.h"
 #include "destructibles.h"

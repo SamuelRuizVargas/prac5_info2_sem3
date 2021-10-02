@@ -7,6 +7,10 @@ Interfaz::Interfaz(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Interfaz)
 {
+    QMessageBox::information(
+        this,
+        tr("NOTA"),
+        tr("Las rutas a cada textura de los objetos se encuentra en la cabecera de su clase correspondiente.") );
     ui->setupUi(this);
     //Se crea la escena
     scene = new QGraphicsScene;
@@ -27,10 +31,10 @@ Interfaz::Interfaz(QWidget *parent)
     //timer de las bombas
     timer=new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(eliminarBomba()));
-    //timer de las bombas
+    //timer de la explosion
     timer_2=new QTimer(this);
     connect(timer_2,SIGNAL(timeout()),this,SLOT(eliminarExplo()));
-    //mostrar escena
+    //mostrar escena 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
 }
@@ -135,10 +139,19 @@ bool Interfaz::EvaluarColisionExp()//se evalua si la explosion colisiona con alg
     int contador=0;
     for(ite=bloq_destru.begin(); ite!=bloq_destru.end(); ite++)
     {
+        bool puerta=bloq_destru[contador]->getDoor();
         if(exp_actu->collidesWithItem(*ite))
         {
             scene->removeItem(*ite);
             bloq_destru.removeAt(contador);
+            if(puerta==true)
+            {
+                QMessageBox::information(
+                    this,
+                    tr("Felicitaciones!"),
+                    tr("Ha encontrado la puerta.") );
+                exit(1);
+            }
             return true;
         }
         contador++;
