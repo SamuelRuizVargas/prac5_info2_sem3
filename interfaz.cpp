@@ -14,26 +14,36 @@ Interfaz::Interfaz(QWidget *parent)
     ui->setupUi(this);
     //Se crea la escena
     scene = new QGraphicsScene;
+
     //Fondo verde
     QPen pen;
     QBrush brush2(Qt::darkGreen,Qt::SolidPattern);
     scene->addRect(0,0,1550,650, pen, brush2);
     scene->setSceneRect(inicio,-15,700,671);
+
     //personaje
     bombardero =new bomber();
     scene->addItem(bombardero);
+
     //Se grafica el mapa estatico
     dibujarLadrillos();
     dibujarBordes();
     dibujarIntermedios();
-    //referencia 0,0
-    scene->addRect(0,0,1,1, QPen(Qt::blue, 3, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin), QBrush(Qt::blue,Qt::SolidPattern));
+    crearEnemigos();
+
     //timer de las bombas
     timer=new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(eliminarBomba()));
+
     //timer de la explosion
     timer_2=new QTimer(this);
     connect(timer_2,SIGNAL(timeout()),this,SLOT(eliminarExplo()));
+
+    //timer del movimiento de los enemigos
+    timer_3=new QTimer(this);
+    connect(timer_3,SIGNAL(timeout()),this,SLOT(moverEnemigos()));
+    timer_3->start(18);
+
     //mostrar escena 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
@@ -98,7 +108,7 @@ bool Interfaz::EvaluarColision()//se evalua si el personaje colisiona con otro(s
 {
     QList<solidos*>::iterator it;
     QList<destructibles*>::iterator ite;
-    QList<bomba*> ::iterator iter;
+    QList<bomba*>::iterator iter;
 
     for(it=bloq_solidos.begin(); it!=bloq_solidos.end(); it++)
     {
@@ -163,6 +173,36 @@ bool Interfaz::EvaluarColisionExp()//se evalua si la explosion colisiona con alg
     return true;
 }
 
+bool Interfaz::EvaluarColisionEnemies()
+{
+    QList<solidos*>::iterator it;
+    QList<destructibles*>::iterator ite;
+    QList<bomba*>::iterator iter;
+
+    for(it=bloq_solidos.begin(); it!=bloq_solidos.end(); it++)
+    {
+        if(enemigo_act->collidesWithItem(*it))
+        {
+            return true;
+        }
+    }
+    for(ite=bloq_destru.begin(); ite!=bloq_destru.end(); ite++)
+    {
+        if(enemigo_act->collidesWithItem(*ite))
+        {
+            return true;
+        }
+    }
+    for(iter=bombs.begin(); iter!=bombs.end(); iter++)
+    {
+        if(enemigo_act->collidesWithItem(*iter))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Interfaz::sobrepasa(int xd)//Dice si el personaje ya paso alguno de los puntos limite
 {
     bool sobrepasa=false;
@@ -177,6 +217,46 @@ bool Interfaz::sobrepasa(int xd)//Dice si el personaje ya paso alguno de los pun
         sobrepasa=true;
     }
     return sobrepasa;
+}
+
+void Interfaz::crearEnemigos(std::string ruta)
+{
+    ifstream archivo;
+    string coorde,numero,int1,int2,digi;
+    int ente1,ente2,len,conta;
+    archivo.open(ruta, ios::in);
+    while(!archivo.eof())
+    {
+        if (archivo.eof())
+            break;
+        getline(archivo,coorde);
+        len=coorde.length();
+        conta=0;
+        for (int i=0; i<=len;i++)
+        {
+            digi=coorde[i];
+            if (digi!="," and digi[0]!='\000' )
+            {
+                numero+=digi;
+            }
+            else
+            {
+                conta+=1;
+                if(conta==1)
+                    int1+=numero;
+                else if(conta==2)
+                    int2+=numero;
+                numero.erase();
+            }
+        }
+        ente1=atoi(int1.c_str());
+        ente2=atoi(int2.c_str());
+        int1.erase();
+        int2.erase();
+        enemigos.append(new baloons(ente1,ente2));
+        scene->addItem(enemigos.back());
+    }
+    archivo.close();
 }
 
 void Interfaz::eliminarBomba()//Se encarga de eliminar la bomba de la escena
@@ -231,6 +311,67 @@ void Interfaz::eliminarExplo()//elimina la explosion de la escena
     }
     timer_2->stop();
     rango_explo.clear();
+}
+
+void Interfaz::moverEnemigos()
+{
+    QList<baloons*>::iterator ite;
+
+    int contador=0;
+    for(ite=enemigos.begin();ite!=enemigos.end();ite++)
+    {
+        if(contador<=5)
+        {
+            enemigo_act=enemigos[contador];
+            bool moverse=enemigo_act->getMov();
+            if(moverse==true)
+            {
+                enemigo_act->moveUp();
+                enemigos[contador]->moveUp();
+                if(EvaluarColisionEnemies())
+                {
+                    enemigos[contador]->movOriginal();
+                    enemigos[contador]->moveDown();
+                }
+            }
+            else
+            {
+                enemigo_act->moveDown();
+                enemigos[contador]->moveDown();
+                if(EvaluarColisionEnemies())
+                {
+                    enemigos[contador]->movOriginal();
+                    enemigos[contador]->moveUp();
+                }
+            }
+        }
+        else
+        {
+            enemigo_act=enemigos[contador];
+            bool moverse=enemigo_act->getMov();
+            if(moverse==true)
+            {
+                enemigo_act->moveLeft();
+                enemigos[contador]->moveLeft();
+                if(EvaluarColisionEnemies())
+                {
+                    enemigos[contador]->movOriginal();
+                    enemigos[contador]->moveRight();
+                }
+            }
+            else
+            {
+                enemigo_act->moveRight();
+                enemigos[contador]->moveRight();
+                if(EvaluarColisionEnemies())
+                {
+                    enemigos[contador]->movOriginal();
+                    enemigos[contador]->moveLeft();
+                }
+            }
+        }
+        contador++;
+    }
 }
 
 void Interfaz::dibujarBordes(std::string ruta)//dibuja los bordes del mapa
