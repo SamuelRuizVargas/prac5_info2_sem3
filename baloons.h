@@ -8,20 +8,22 @@
 
 class baloons : public QGraphicsItem
 {
-    int h=50;
-    int a=50;
+    int h=25;
+    int a=25;
     bool movi_original=true;
+    bool vertical;
     int posx;
     int posy;
     int velocidad=1;
 
 public:
     baloons();
-    baloons(int,int);
+    baloons(int,int,bool);
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
     void movOriginal();
     bool getMov();
+    bool getVerti();
     void moveUp();
     void moveDown();
     void moveLeft();

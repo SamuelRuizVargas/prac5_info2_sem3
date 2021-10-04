@@ -7,16 +7,17 @@ baloons::baloons()
     setPos(posx,posy);
 }
 
-baloons::baloons(int x, int y)
+baloons::baloons(int x, int y, bool _vertical)
 {
     posx=x;
     posy=y;
+    vertical=_vertical;
     setPos(posx,posy);
 }
 
 QRectF baloons::boundingRect() const
 {
-    return QRectF(0,0,50,50);
+    return QRectF(0,0,30,30);
 }
 
 void baloons::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -37,6 +38,11 @@ void baloons::movOriginal()
 bool baloons::getMov()
 {
     return movi_original;
+}
+
+bool baloons::getVerti()
+{
+    return vertical;
 }
 
 void baloons::moveUp()//cambiar posicion hacia arriba
