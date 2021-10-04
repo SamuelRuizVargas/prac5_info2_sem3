@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <stdlib.h>
+#include <stdio.h>
 #include <fstream>
 #include <vector>
 #include <QTimer>
@@ -41,28 +42,37 @@ public slots:
     void eliminarBomba();
     void eliminarExplo();
     void moverEnemigos();
+    void tiempoPasa();
+    void mortal();
 
 private:
     Ui::Interfaz *ui;
+    QGraphicsScene *scene;
+    baloons *enemigo_act;
+    explosion *exp_actu;
     bomber *bombardero;
     bomba *bomb;
-    explosion *exp_actu;
-    baloons *enemigo_act;
-    QGraphicsScene *scene;
+
     QList<solidos*> bloq_solidos;
     QList<bomba*> bombs;
     QList<destructibles*> bloq_destru;
     QList<explosion*> rango_explo;
     QList<baloons*> enemigos;
+
     QTimer *timer;
     QTimer *timer_2;
     QTimer *timer_3;
+    QTimer *timer_4;
+    QTimer *timer_5;
 
     void keyPressEvent(QKeyEvent *evento);
+
     bool EvaluarColision();
     bool EvaluarColisionExp();
     bool EvaluarColisionEnemies();
+
     bool sobrepasa(int);
+
     void crearEnemigos(std::string=PATH_ENEM);
     void dibujarBordes(std::string=PATH_SOLID);
     void dibujarIntermedios();

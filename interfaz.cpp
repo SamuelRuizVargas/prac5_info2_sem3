@@ -2,6 +2,8 @@
 #include "ui_interfaz.h"
 
 int inicio=0;
+int vidas=3;
+int puntaje=0;
 
 Interfaz::Interfaz(QWidget *parent)
     : QMainWindow(parent)
@@ -43,6 +45,17 @@ Interfaz::Interfaz(QWidget *parent)
     timer_3=new QTimer(this);
     connect(timer_3,SIGNAL(timeout()),this,SLOT(moverEnemigos()));
     timer_3->start(18);
+
+    //timer del countdown del juego
+    ui->lcd_time->display(200);
+    timer_4=new QTimer(this);
+    connect(timer_4,SIGNAL(timeout()),this,SLOT(tiempoPasa()));
+    timer_4->start(1000);
+
+    //Vidas y timer de la inmortalidad
+    ui->lcd_lifes->display(vidas);
+    timer_5=new QTimer(this);
+    connect(timer_5,SIGNAL(timeout()),this,SLOT(mortal()));
 
     //mostrar escena 
     ui->graphicsView->setScene(scene);
@@ -138,6 +151,7 @@ bool Interfaz::EvaluarColisionExp()//se evalua si la explosion colisiona con alg
 {
     QList<solidos*>::iterator it;
     QList<destructibles*>::iterator ite;
+    QList<baloons*>::iterator iter;
 
     for(it=bloq_solidos.begin(); it!=bloq_solidos.end(); it++)
     {
@@ -154,6 +168,8 @@ bool Interfaz::EvaluarColisionExp()//se evalua si la explosion colisiona con alg
         {
             scene->removeItem(*ite);
             bloq_destru.removeAt(contador);
+            puntaje+=100;
+            ui->lcd_score->display(puntaje);
             if(puerta==true)
             {
                 QMessageBox::information(
@@ -166,9 +182,43 @@ bool Interfaz::EvaluarColisionExp()//se evalua si la explosion colisiona con alg
         }
         contador++;
     }
+    int con=0;
+    for(iter=enemigos.begin(); iter!=enemigos.end(); iter++)
+    {
+        if(exp_actu->collidesWithItem(*iter))
+        {
+            scene->removeItem(*iter);
+            enemigos.removeAt(con);
+            puntaje+=500;
+            ui->lcd_score->display(puntaje);
+            return true;
+        }
+        con++;
+    }
+    bool inmo=bombardero->getInmo();
     if(exp_actu->collidesWithItem(bombardero))
     {
-        //Quitar una vida
+        if(inmo==true)
+        {
+
+        }
+        else
+        {
+            vidas-=1;
+            ui->lcd_lifes->display(vidas);
+            if(vidas==0)
+            {
+                QMessageBox::information(
+                    this,
+                    tr("GAME OVER"),
+                    tr("Ultima vida perdida por una explosion propia."));
+                timer_4->stop();
+                bombardero->cambiar();
+                exit(1);
+            }
+            bombardero->cambiar();
+            timer_5->start(2000);
+        }
     }
     return true;
 }
@@ -200,6 +250,31 @@ bool Interfaz::EvaluarColisionEnemies()
             return true;
         }
     }
+    bool inmo=bombardero->getInmo();
+    if(enemigo_act->collidesWithItem(bombardero))
+    {
+        if(inmo==true)
+        {
+
+        }
+        else
+        {
+            vidas-=1;
+            ui->lcd_lifes->display(vidas);
+            if(vidas==0)
+            {
+                QMessageBox::information(
+                    this,
+                    tr("GAME OVER"),
+                    tr("Ultima vida perdida por un enemigo."));
+                timer_4->stop();
+                bombardero->cambiar();
+                exit(1);
+            }
+            bombardero->cambiar();
+            timer_5->start(2000);
+        }
+    }
     return false;
 }
 
@@ -223,7 +298,7 @@ void Interfaz::crearEnemigos(std::string ruta)
 {
     ifstream archivo;
     string coorde,numero,int1,int2,digi;
-    int ente1,ente2,len,conta;
+    int ente1,ente2,len,conta,contador=0;
     archivo.open(ruta, ios::in);
     while(!archivo.eof())
     {
@@ -253,8 +328,17 @@ void Interfaz::crearEnemigos(std::string ruta)
         ente2=atoi(int2.c_str());
         int1.erase();
         int2.erase();
-        enemigos.append(new baloons(ente1,ente2));
-        scene->addItem(enemigos.back());
+        if(contador>=0 and contador<=5)
+        {
+            enemigos.append(new baloons(ente1,ente2,true));
+            scene->addItem(enemigos.back());
+        }
+        else
+        {
+            enemigos.append(new baloons(ente1,ente2,false));
+            scene->addItem(enemigos.back());
+        }
+        contador++;
     }
     archivo.close();
 }
@@ -268,6 +352,8 @@ void Interfaz::eliminarBomba()//Se encarga de eliminar la bomba de la escena
     //se grafica el centro de la explosion
     rango_explo.append(new explosion("centro",x,y));
     scene->addItem(rango_explo.back());
+    exp_actu=new explosion("centro",x,y);
+    EvaluarColisionExp();
     //lado derecho graficable?
     copy_x=x+50;
     exp_actu=new explosion("derecha",copy_x,y);
@@ -313,14 +399,16 @@ void Interfaz::eliminarExplo()//elimina la explosion de la escena
     rango_explo.clear();
 }
 
-void Interfaz::moverEnemigos()
+void Interfaz::moverEnemigos()//se encarga de hacer que los enemigos se muevan
 {
     QList<baloons*>::iterator ite;
 
     int contador=0;
+    bool verticalidad;
     for(ite=enemigos.begin();ite!=enemigos.end();ite++)
     {
-        if(contador<=5)
+        verticalidad=enemigos[contador]->getVerti();
+        if(verticalidad==true)
         {
             enemigo_act=enemigos[contador];
             bool moverse=enemigo_act->getMov();
@@ -372,6 +460,35 @@ void Interfaz::moverEnemigos()
         }
         contador++;
     }
+}
+
+void Interfaz::tiempoPasa()//cuenta el tiempo transcurrido para el countdown
+{
+    static int conta=1;
+    ui->lcd_time->display(200-conta);
+    if(200-conta==0)
+    {
+        timer_4->stop();
+        vidas-=1;
+        ui->lcd_lifes->display(vidas);
+        if(vidas==0)
+        {
+            QMessageBox::information(
+                this,
+                tr("GAME OVER"),
+                tr("Ultima vida perdida por el tiempo acabado."));
+            bombardero->cambiar();
+            timer_4->stop();
+            exit(1);
+        }
+    }
+    conta++;
+}
+
+void Interfaz::mortal()//vuelve a bomberman mortal otra vez
+{
+    bombardero->cambiar();
+    timer_5->stop();
 }
 
 void Interfaz::dibujarBordes(std::string ruta)//dibuja los bordes del mapa
@@ -438,7 +555,7 @@ void Interfaz::dibujarIntermedios()//dibuja los solidos interiores del mapa
     }
 }
 
-void Interfaz::dibujarLadrillos(std::string ruta)
+void Interfaz::dibujarLadrillos(std::string ruta)//dibuja los ladrillos que pueden ser destruidos del mapa
 {
     ifstream archivo;
     string coorde,numero,int1,int2,digi;
