@@ -13,6 +13,7 @@ class bomber : public QGraphicsItem
     int posx;
     int posy;
     int velocidad=50;
+    bool inmortal=false;
 
 public:
     bomber();
@@ -25,6 +26,8 @@ public:
     void moveRight();
     int getPOSX();
     int getPOSY();
+    void cambiar();
+    bool getInmo();
     ~bomber();
 };
 

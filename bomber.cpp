@@ -60,6 +60,19 @@ int bomber::getPOSY()//devuelve la posicion en Y del item
     return posy;
 }
 
+void bomber::cambiar()
+{
+    if(inmortal==false)
+        inmortal=true;
+    else
+        inmortal=false;
+}
+
+bool bomber::getInmo()
+{
+    return inmortal;
+}
+
 bomber::~bomber()
 {
 
